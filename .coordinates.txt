@@ -1,2 +1,2 @@
-Start Point: (-12, -12)
-End Point: (812, 492)
+Start Point: (343, 171)
+End Point: (444, 317)

@@ -3122,8 +3122,9 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
             for i in range(0,48):
                 if(self.base_window.quantitative_analysis_2.id_list[i] != 'N/A'):
                     self.y_result_list[i] = self.result[i]/self.base_window.system_check.threshold
-                    self.x_result_list[i] = (self.y_result_list[i] - self.base_window.quantitative_analysis_1.b_value)/self.base_window.quantitative_analysis_1.a_value
-                    self.concen_result_list[i] = round((1 + (self.x_result_list[i] - round(self.x_result_list[i])))*(10**round(self.x_result_list[i])))
+                    self.x_result_list[i] = round((self.y_result_list[i] - self.base_window.quantitative_analysis_1.b_value)/self.base_window.quantitative_analysis_1.a_value,3)
+                    self.concen_result_list[i] = round(10**self.x_result_list[i])
+                    # ~ self.concen_result_list[i] = round((1 + (self.x_result_list[i] - round(self.x_result_list[i])))*(10**round(self.x_result_list[i])))
                     # ~ self.concen_result_list[i] = self.x_result_list[i]
             self.progressbar['value']=80
             self.base_window.update_idletasks()
@@ -3223,15 +3224,16 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                 # ~ self.tooltip[i].bind(result_label[i], self.base_window.quantitative_analysis_2.id_list[i])
 
                 if(self.base_window.quantitative_analysis_2.id_list[i] != 'N/A'):
+                    if(self.concen_result_list[i] <= 10000):
+                        result_label[i]['bg'] = LOW_COPY_COLOR
+                        result_label[i]['text'] = self.concen_result_list[i]
+                    else:
+                        result_label[i]['bg'] = POSITIVE_COLOR
+                        result_label[i]['text'] = ">10000"
+                    
                     if(round(self.result[i]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
                         result_label[i]['bg'] = NEGATIVE_COLOR
                         result_label[i]['text'] = '0'
-                    elif(self.concen_result_list[i] <= 10000):
-                        result_label[i]['bg'] = LOW_COPY_COLOR
-                        result_label[i]['text'] = self.concen_result_list[i]
-                    elif(self.concen_result_list[i] > 10000):
-                        result_label[i]['bg'] = POSITIVE_COLOR
-                        result_label[i]['text'] = self.concen_result_list[i]
                 else:
                     result_label[i]['text'] = "N/A"
                     result_label[i]['bg'] = NA_COLOR
@@ -3321,11 +3323,7 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
 
                     n+=1
 
-                    if(round(self.result[i]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
-                        sample_button_list[i]['text'] = self.base_window.quantitative_analysis_2.id_list[i]
-                        result_button_list[i]['text'] = '0'
-                        result_button_list[i]['bg'] = NEGATIVE_COLOR
-                    elif(self.concen_result_list[i] <= 10000):
+                    if(self.concen_result_list[i] <= 10000):
                         sample_button_list[i]['text'] = self.base_window.quantitative_analysis_2.id_list[i]
                         result_button_list[i]['text'] = self.concen_result_list[i]
                         result_button_list[i]['bg'] = LOW_COPY_COLOR
@@ -3333,6 +3331,11 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                         sample_button_list[i]['text'] = self.base_window.quantitative_analysis_2.id_list[i]
                         result_button_list[i]['text'] = ">10000"
                         result_button_list[i]['bg'] = POSITIVE_COLOR
+                    
+                    if(round(self.result[i]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
+                        sample_button_list[i]['text'] = self.base_window.quantitative_analysis_2.id_list[i]
+                        result_button_list[i]['text'] = '0'
+                        result_button_list[i]['bg'] = NEGATIVE_COLOR
 
 
 
@@ -3520,11 +3523,8 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                 if(self.base_window.quantitative_analysis_2.id_list[c1]=='N/A'):
                     sheet['D'+str(i+12)] = 'N/A'
                 else:
-                    if(round(self.result[c1]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
-                        sheet['D'+str(i+12)] = '0'
-                        sheet['D'+str(i+12)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
-                        # ~ sheet['E'+str(i+12)] = '0'
-                    elif(self.concen_result_list[c1] <= 10000):
+                    
+                    if(self.concen_result_list[c1] <= 10000):
                         sheet['D'+str(i+12)] = self.concen_result_list[c1]
                         sheet['D'+str(i+12)].fill = PatternFill(start_color='00FFCCFF', end_color='00FFCCFF', fill_type='solid')
                         # ~ sheet['E'+str(i+12)] = self.concen_result_list[c1]
@@ -3536,6 +3536,11 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                         # ~ sheet['E'+str(i+12)] = self.concen_result_list[c1]
                         sheet['D'+str(i+12)].font = font2
                         sheet['B'+str(i+12)].font = font2
+                        
+                    if(round(self.result[c1]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
+                        sheet['D'+str(i+12)] = '0'
+                        sheet['D'+str(i+12)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
+                        # ~ sheet['E'+str(i+12)] = '0'
 
                 sheet['F'+str(i+12)].protection = Protection(locked=False, hidden=False)
 
@@ -3544,11 +3549,7 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                 if(self.base_window.quantitative_analysis_2.id_list[c2]=='N/A'):
                     sheet['D'+str(i+20)] = 'N/A'
                 else:
-                    if(round(self.result[c2]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
-                        sheet['D'+str(i+20)] = '0'
-                        sheet['D'+str(i+20)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
-                        # ~ sheet['E'+str(i+20)] = '0'
-                    elif(self.concen_result_list[c2] <= 10000):
+                    if(self.concen_result_list[c2] <= 10000):
                         sheet['D'+str(i+20)] = self.concen_result_list[c2]
                         sheet['D'+str(i+20)].fill = PatternFill(start_color='00FFCCFF', end_color='00FFCCFF', fill_type='solid')
                         # ~ sheet['E'+str(i+20)] = self.concen_result_list[c2]
@@ -3560,6 +3561,11 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                         # ~ sheet['E'+str(i+20)] = self.concen_result_list[c2]
                         sheet['D'+str(i+20)].font = font2
                         sheet['B'+str(i+20)].font = font2
+                        
+                    if(round(self.result[c2]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
+                        sheet['D'+str(i+20)] = '0'
+                        sheet['D'+str(i+20)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
+                        # ~ sheet['E'+str(i+20)] = '0'
 
                 sheet['F'+str(i+20)].protection = Protection(locked=False, hidden=False)
 
@@ -3568,11 +3574,7 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                 if(self.base_window.quantitative_analysis_2.id_list[c3]=='N/A'):
                     sheet['D'+str(i+28)] = 'N/A'
                 else:
-                    if(round(self.result[c3]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
-                        sheet['D'+str(i+28)] = '0'
-                        sheet['D'+str(i+28)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
-                        # ~ sheet['E'+str(i+28)] = '0'
-                    elif(self.concen_result_list[c3] <= 10000):
+                    if(self.concen_result_list[c3] <= 10000):
                         sheet['D'+str(i+28)] = self.concen_result_list[c3]
                         sheet['D'+str(i+28)].fill = PatternFill(start_color='00FFCCFF', end_color='00FFCCFF', fill_type='solid')
                         # ~ sheet['E'+str(i+28)] = self.concen_result_list[c3]
@@ -3584,6 +3586,10 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                         # ~ sheet['E'+str(i+28)] = self.concen_result_list[c3]
                         sheet['D'+str(i+28)].font = font2
                         sheet['B'+str(i+28)].font = font2
+                    if(round(self.result[c3]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
+                        sheet['D'+str(i+28)] = '0'
+                        sheet['D'+str(i+28)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
+                        # ~ sheet['E'+str(i+28)] = '0'
 
                 sheet['F'+str(i+28)].protection = Protection(locked=False, hidden=False)
 
@@ -3592,11 +3598,8 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                 if(self.base_window.quantitative_analysis_2.id_list[c4]=='N/A'):
                     sheet['D'+str(i+36)] = 'N/A'
                 else:
-                    if(round(self.result[c4]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
-                        sheet['D'+str(i+36)] = '0'
-                        sheet['D'+str(i+36)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
-                        # ~ sheet['E'+str(i+36)] = '0'
-                    elif(self.concen_result_list[c4] <= 10000):
+                    
+                    if(self.concen_result_list[c4] <= 10000):
                         sheet['D'+str(i+36)] = self.concen_result_list[c4]
                         sheet['D'+str(i+36)].fill = PatternFill(start_color='00FFCCFF', end_color='00FFCCFF', fill_type='solid')
                         # ~ sheet['E'+str(i+36)] = self.concen_result_list[c4]
@@ -3608,6 +3611,10 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                         # ~ sheet['E'+str(i+36)] = self.concen_result_list[c4]
                         sheet['D'+str(i+36)].font = font2
                         sheet['B'+str(i+36)].font = font2
+                    if(round(self.result[c4]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
+                        sheet['D'+str(i+36)] = '0'
+                        sheet['D'+str(i+36)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
+                        # ~ sheet['E'+str(i+36)] = '0'
 
                 sheet['F'+str(i+36)].protection = Protection(locked=False, hidden=False)
 
@@ -3616,11 +3623,7 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                 if(self.base_window.quantitative_analysis_2.id_list[c5]=='N/A'):
                     sheet['D'+str(i+44)] = 'N/A'
                 else:
-                    if(round(self.result[c5]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
-                        sheet['D'+str(i+44)] = '0'
-                        sheet['D'+str(i+44)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
-                        # ~ sheet['E'+str(i+44)] = '0'
-                    elif(self.concen_result_list[c5] <= 10000):
+                    if(self.concen_result_list[c5] <= 10000):
                         sheet['D'+str(i+44)] = ">10000"
                         sheet['D'+str(i+44)].fill = PatternFill(start_color='00FFCCFF', end_color='00FFCCFF', fill_type='solid')
                         # ~ sheet['E'+str(i+44)] = self.concen_result_list[c5]
@@ -3632,6 +3635,11 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                         # ~ sheet['E'+str(i+44)] = self.concen_result_list[c5]
                         sheet['D'+str(i+44)].font = font2
                         sheet['B'+str(i+44)].font = font2
+                        
+                    if(round(self.result[c5]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
+                        sheet['D'+str(i+44)] = '0'
+                        sheet['D'+str(i+44)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
+                        # ~ sheet['E'+str(i+44)] = '0'
 
                 sheet['F'+str(i+44)].protection = Protection(locked=False, hidden=False)
 
@@ -3640,11 +3648,7 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                 if(self.base_window.quantitative_analysis_2.id_list[c6]=='N/A'):
                     sheet['D'+str(i+52)] = 'N/A'
                 else:
-                    if(round(self.result[c6]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
-                        sheet['D'+str(i+52)] = '0'
-                        sheet['D'+str(i+52)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
-                        # ~ sheet['E'+str(i+52)] = '0'
-                    elif(self.concen_result_list[c6] <= 10000):
+                    if(self.concen_result_list[c6] <= 10000):
                         sheet['D'+str(i+52)] = self.concen_result_list[c6]
                         sheet['D'+str(i+52)].fill = PatternFill(start_color='00FFCCFF', end_color='00FFCCFF', fill_type='solid')
                         # ~ sheet['E'+str(i+52)] = self.concen_result_list[c6]
@@ -3656,6 +3660,11 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
                         # ~ sheet['E'+str(i+52)] = self.concen_result_list[c6]
                         sheet['D'+str(i+52)].font = font2
                         sheet['B'+str(i+52)].font = font2
+                        
+                    if(round(self.result[c6]/self.base_window.system_check.threshold,2) <= self.base_window.quantitative_analysis_1.n_base_value):
+                        sheet['D'+str(i+52)] = '0'
+                        sheet['D'+str(i+52)].fill = PatternFill(start_color='0000FF00', end_color='0000FF00', fill_type='solid')
+                        # ~ sheet['E'+str(i+52)] = '0'
 
                 sheet['F'+str(i+52)].protection = Protection(locked=False, hidden=False)
 
