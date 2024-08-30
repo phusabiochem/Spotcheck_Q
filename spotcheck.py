@@ -3122,7 +3122,7 @@ class QuantitativeAnalysisFrame3(QualitativeAnalysisFrame3):
             for i in range(0,48):
                 if(self.base_window.quantitative_analysis_2.id_list[i] != 'N/A'):
                     self.y_result_list[i] = self.result[i]/self.base_window.system_check.threshold
-                    self.x_result_list[i] = round((self.y_result_list[i] - self.base_window.quantitative_analysis_1.b_value)/self.base_window.quantitative_analysis_1.a_value,3)
+                    self.x_result_list[i] = (self.y_result_list[i] - self.base_window.quantitative_analysis_1.b_value)/self.base_window.quantitative_analysis_1.a_value
                     self.concen_result_list[i] = round(10**self.x_result_list[i])
                     # ~ self.concen_result_list[i] = round((1 + (self.x_result_list[i] - round(self.x_result_list[i])))*(10**round(self.x_result_list[i])))
                     # ~ self.concen_result_list[i] = self.x_result_list[i]
